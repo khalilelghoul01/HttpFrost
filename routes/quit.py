@@ -1,4 +1,5 @@
 
 
 def Handler(request,data, parent):
-    exit()
+    html = parent.fromFile("index.html", {"title": "str(data)"})
+    return parent.sendHtml(html)

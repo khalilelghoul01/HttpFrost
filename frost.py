@@ -32,6 +32,17 @@ class Frost:
         self.config = variables
         self.data = {}
         self.cookies = {}
+        self.status = {
+            200: "OK",
+            301: "Moved Permanently",
+            302: "Found",
+            400: "Bad Request",
+            401: "Unauthorized",
+            403: "Forbidden",
+            404: "Not Found",
+            500: "Internal Server Error",
+            501: "Not Implemented"
+        }
 
     def run(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,7 +113,7 @@ class Frost:
             try:
                 module = __import__(fileToCall)
                 handler = getattr(module, 'Handler')
-                response = 'HTTP/1.0 200 OK\n'+ handler(request,self.data, self)
+                response = handler(request,self.data, self)
                 client_connection.sendall(response.encode())
             except Exception as e:
                 print(e)
@@ -148,8 +159,22 @@ class Frost:
                 cookie += "Set-Cookie: "+str(key)+"="+str(self.cookies[key]["value"])+"; Secure\n"
         return cookie
     
-    def sendHtml(self,html):
-        return self.serializeCookies() + "\n\n" + html
+    def sendHtml(self,html,status=200):
+        if(not self.checkStatusExist(status)):
+            status = 200
+        response = 'HTTP/1.0 '+str(status)+' '+self.status[status]+'\nContent-Type: text/html\n\n'+  html
+        return response
+
+    def redirect(self,url,status=302):
+        if(not self.checkStatusExist(status)):
+            status = 302
+        response = 'HTTP/1.0 '+str(status)+' '+self.status[status]+'\nLocation: '+url+'\n\n'
+        return response
+
+    def checkStatusExist(self,status):
+        if(status in self.status):
+            return True
+        return False
 
 
 if __name__ == '__main__':
