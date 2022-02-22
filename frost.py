@@ -204,7 +204,7 @@ class Frost:
     def debug_mode(self):
         global filesIDs
         while(self.debug):
-            time.sleep(1)
+            time.sleep(2)
             for file in filesIDs:
                 path = filesIDs[file]["file"]
                 hashmd5 = str(hashlib.md5(file_as_bytes(open(path, 'rb'))).hexdigest())
