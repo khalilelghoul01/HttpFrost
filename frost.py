@@ -1,20 +1,22 @@
 
+import hashlib
+import importlib
 import os
 import re
 import socket
 import sys
 import datetime
 import threading
+import time
 from colorama import Fore, Back, Style
 from _thread import *
+import threading
 import console
 from pyfiglet import Figlet
 
 publicDir = 'public'
 routeDir = 'routes'
-
-
-
+filesIDs = {}
 
 def Log(func):
     def wrapper(*args, **kwargs):
@@ -23,9 +25,13 @@ def Log(func):
         return func(*args, **kwargs)
     return wrapper
 
+def file_as_bytes(file):
+    with file:
+        return file.read()
 
 class Frost:
-    def __init__(self, host='localhost', port=5000, variables=None):
+    def __init__(self, host='localhost', port=5000, variables=None,debug=False):
+        self.debug = debug
         self.host = host.strip()
         self.port = port
         self.routes = []
@@ -43,8 +49,10 @@ class Frost:
             500: "Internal Server Error",
             501: "Not Implemented"
         }
+        self.filesList = os.listdir(routeDir)
 
     def run(self):
+
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((self.host, self.port))
@@ -53,6 +61,16 @@ class Frost:
 
         f = Figlet(font='smslant')
         print(console.Color(43, 216, 255) + f.renderText('HttpFrost') + Style.RESET_ALL)
+
+
+
+        if(self.debug):
+            print(console.Color(245, 155, 66)+"Starting Frost in debuggin mode"+Style.RESET_ALL)
+            debugThread = threading.Thread(target=self.debug_mode)
+            debugThread.start()
+
+
+
 
         # create a thread to handle each request
         while running:
@@ -94,6 +112,7 @@ class Frost:
         return data
     @Log
     def handle_request(self, request, client_connection):
+        global filesIDs
         filename = request[1]
         if not "." in filename:
             if filename.endswith('/'):
@@ -112,6 +131,12 @@ class Frost:
                 sys.path.insert(1, fileDir)
             try:
                 module = __import__(fileToCall)
+                moduleID = {
+                    "module": module,
+                    "file": filePDir,
+                    "md5": str(hashlib.md5(file_as_bytes(open(filePDir, 'rb'))).hexdigest())
+                }
+                filesIDs[fileToCall] = moduleID
                 handler = getattr(module, 'Handler')
                 response = handler(request,self.data, self)
                 client_connection.sendall(response.encode())
@@ -176,8 +201,28 @@ class Frost:
             return True
         return False
 
+    def debug_mode(self):
+        global filesIDs
+        while(self.debug):
+            time.sleep(1)
+            for file in filesIDs:
+                path = filesIDs[file]["file"]
+                hashmd5 = str(hashlib.md5(file_as_bytes(open(path, 'rb'))).hexdigest())
+                if(filesIDs[file]["md5"] != hashmd5):
+                    self.reload()
+                    filesIDs[str(file)]["md5"] =  hashmd5
+                    
+    def reload(self):
+        print(Fore.GREEN + "Reloading" + Style.RESET_ALL)
+        for key in filesIDs:
+            module = filesIDs[key]["module"]
+            importlib.reload(module)
+        print(Fore.GREEN + "All up to date" + Style.RESET_ALL)
+
+
+
 
 if __name__ == '__main__':
-    frost = Frost(host='0.0.0.0', port=80)
+    frost = Frost(host='0.0.0.0', port=80,debug=True)
     frost.run()
     
