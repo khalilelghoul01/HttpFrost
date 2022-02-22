@@ -22,7 +22,10 @@ filesIDs = {}
 def Log(func):
     def wrapper(*args, **kwargs):
         request = args[1]
-        print(Fore.YELLOW + " - ".join(request) + Style.RESET_ALL)
+        log = Fore.YELLOW + " - ".join(request) + Style.RESET_ALL
+        print(log)
+        with open("requests.log", "a+") as f:
+            f.write(datetime.datetime.now().strftime("[%d-%b-%Y (%H:%M:%S.%f)] : ") + " - ".join(request) + "\n")
         return func(*args, **kwargs)
     return wrapper
 
