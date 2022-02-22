@@ -27,7 +27,7 @@ frost.run()
 
 you need two folders (routes, public):
 
--in public you can put your static files (css, js, images, etc)\n
+-in public you can put your static files (css, js, images, etc)<br>
 -in routes you can put your routes controller in python files
 
 
