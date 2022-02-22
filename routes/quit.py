@@ -1,4 +1,4 @@
 
 
-def Handler(request, parent):
+def Handler(request,data, parent):
     exit()

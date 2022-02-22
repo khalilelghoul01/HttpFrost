@@ -11,7 +11,6 @@ from _thread import *
 publicDir = 'public'
 routeDir = 'routes'
 
-ThreadCount = 0
 
 
 
