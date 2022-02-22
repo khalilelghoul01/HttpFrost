@@ -13,8 +13,8 @@ type: a nested framework like PHP or Ruby
 
 ## Main
 
-[]: # Language: python
-[]: # Path: main.py
+# Language: python
+# Path: main.py
 
 ```python
 from frost import Frost
@@ -33,8 +33,8 @@ you need two folders (routes, public):
 
 ## Routes
 
-[]: # Language: python
-[]: # Path: index.py
+# Language: python
+# Path: index.py
 
 ```python
 def Handler(request,data, parent):
