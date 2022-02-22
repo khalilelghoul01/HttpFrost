@@ -1,4 +1,5 @@
 
+from enum import auto
 import hashlib
 import importlib
 import os
@@ -60,7 +61,17 @@ class Frost:
         running = True
 
         f = Figlet(font='smslant')
-        print(console.Color(43, 216, 255) + f.renderText('HttpFrost') + Style.RESET_ALL)
+        author = "by @khalilelghoul01"
+        httpFrost = f.renderText('HttpFrost')
+        author = author + (" "*(len(httpFrost.split("\n")[0])-len(author)))+"\n"
+        author += (" "*(len(httpFrost.split("\n")[0])+10))
+        httpfrostLines = httpFrost.split("\n")
+        for index,line in enumerate(httpfrostLines):
+            line = " "*5+line+" "*5
+            httpfrostLines[index] = line
+            
+        httpFrost = "\n".join(httpfrostLines)
+        print(console.Color(0, 0, 0,True)+console.Color(43, 216, 255) + httpFrost + console.Color(230, 0, 153)+author+ Style.RESET_ALL)
 
 
 
