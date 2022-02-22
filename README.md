@@ -1,9 +1,10 @@
 # HttpFrost
-// smslant
 a python web framework
 
 
-
+it's a web framework for python
+type: a nested framework like PHP or Ruby
+   every file is a web page
 
 
    __ ____  __       ____             __ 

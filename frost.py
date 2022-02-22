@@ -7,6 +7,8 @@ import datetime
 import threading
 from colorama import Fore, Back, Style
 from _thread import *
+import console
+from pyfiglet import Figlet
 
 publicDir = 'public'
 routeDir = 'routes'
@@ -37,6 +39,10 @@ class Frost:
         server_socket.bind((self.host, self.port))
         server_socket.listen(5)
         running = True
+
+        f = Figlet(font='smslant')
+        print(console.Color(43, 216, 255) + f.renderText('HttpFrost') + Style.RESET_ALL)
+
         # create a thread to handle each request
         while running:
             client_socket, address = server_socket.accept()
